@@ -21,17 +21,17 @@ __all__ = ['Energy']
 
 
 class Energy(object):
+    """Energy is a consumable stuff of social gamers. Gamers use energy for
+    some actions like farming, housing or any social actions. Then consumed
+    energy will be recovered after few minutes.
 
-    #: max energy
-    max = None
-    #: interval in seconds to recover energy
-    recovery_interval = None
-    #: quantity of energy recovered once
-    recovery_quantity = None
-    #: quantity of used energy
-    used = 0
-    #: datetime when using the energy first
-    used_at = None
+    :param max: maximum of energy
+    :param recovery_interval: an interval in seconds to recover energy. It
+                              should be :type:`int`, :type:`float` or
+                              :type:`timedelta`.
+    :param recovery_quantity: a quantity of once energy recovery. Defaults to
+                              ``1``.
+    """
 
     def __init__(self, max, recovery_interval, recovery_quantity=1):
         if not isinstance(max, int):
@@ -42,9 +42,16 @@ class Energy(object):
             recovery_interval = recovery_interval.total_seconds()
         if not isinstance(recovery_interval, (int, float)):
             raise TypeError('recovery_interval should be number')
+        #: The maximum of energy.
         self.max = max
+        #: The interval in seconds to recover energy.
         self.recovery_interval = recovery_interval
+        #: The quantity of once energy recovery.
         self.recovery_quantity = recovery_quantity
+        #: Quantity of used energy.
+        self.used = 0
+        #: Datetime when using the energy first.
+        self.used_at = None
 
     def current(self, now=None):
         """Calculates the current energy.
@@ -151,10 +158,9 @@ class Energy(object):
 
     def __repr__(self, now=None):
         now = now or datetime.utcnow()
-        cur, max = self.current(now), self.max
-        rv = '<%s %d/%d' % (type(self).__name__, cur, max)
-        if cur != max:
+        current, = self.current(now)
+        rv = '<%s %d/%d' % (type(self).__name__, current, self.max)
+        if current < self.max:
             recover_in = self.recover_in(now)
-            rv += ' recover in %02d:%02d' % \
-                  (recover_in / 60, recover_in % 60)
+            rv += ' recover in %02d:%02d' % (recover_in / 60, recover_in % 60)
         return rv + '>'
