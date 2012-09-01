@@ -65,11 +65,11 @@ def init_energy():
 @suite.test
 def use_energy():
     energy = Energy(10, 1000)
-    assert int(energy) == 10
+    assert energy == 10
     energy.use()
-    assert int(energy) == 9
+    assert energy == 9
     energy.use(5)
-    assert int(energy) == 4
+    assert energy == 4
     with raises(ValueError):
         energy.use(5)
 
@@ -78,9 +78,9 @@ def use_energy():
 def set_energy():
     energy = Energy(10, 1000)
     energy.set(1)
-    assert int(energy) == 1
+    assert energy == 1
     energy.set(5)
-    assert int(energy) == 5
+    assert energy == 5
 
 
 @suite.test
@@ -99,38 +99,38 @@ def cast_energy():
 def recover_energy():
     with time_traveler(Energy(10, 5)) as (energy, T):
         T( 0); energy.use(1)
-        T( 1); assert int(energy) == 9;  assert energy.recover_in() == 4
-        T( 2); assert int(energy) == 9;  assert energy.recover_in() == 3
-        T( 3); assert int(energy) == 9;  assert energy.recover_in() == 2
-        T( 4); assert int(energy) == 9;  assert energy.recover_in() == 1
-        T( 5); assert int(energy) == 10; assert energy.recover_in() == 0
-        T( 6); assert int(energy) == 10; assert energy.recover_in() == 0
-        T(99); assert int(energy) == 10; assert energy.recover_in() == 0
+        T( 1); assert energy == 9;  assert energy.recover_in() == 4
+        T( 2); assert energy == 9;  assert energy.recover_in() == 3
+        T( 3); assert energy == 9;  assert energy.recover_in() == 2
+        T( 4); assert energy == 9;  assert energy.recover_in() == 1
+        T( 5); assert energy == 10; assert energy.recover_in() == 0
+        T( 6); assert energy == 10; assert energy.recover_in() == 0
+        T(99); assert energy == 10; assert energy.recover_in() == 0
 
 
 @suite.test
 def use_energy_while_recovering():
     with time_traveler(Energy(10, 5)) as (energy, T):
         T( 0); energy.use(5)
-        T( 1); assert int(energy) == 5
+        T( 1); assert energy == 5
         T( 2); energy.use(1)
-        T( 3); assert int(energy) == 4
-        T( 4); assert int(energy) == 4
-        T( 5); assert int(energy) == 5
-        T( 6); assert int(energy) == 5
+        T( 3); assert energy == 4
+        T( 4); assert energy == 4
+        T( 5); assert energy == 5
+        T( 6); assert energy == 5
         T( 7); energy.use(1)
-        T( 8); assert int(energy) == 4
-        T( 9); assert int(energy) == 4
-        T(10); assert int(energy) == 5
+        T( 8); assert energy == 4
+        T( 9); assert energy == 4
+        T(10); assert energy == 5
 
 
 @suite.test
 def use_energy_after_recovered():
     with time_traveler(Energy(10, 5)) as (energy, T):
         T( 0); energy.use(10)
-        T( 1); assert int(energy) == 0
+        T( 1); assert energy == 0
         T( 5); energy.use(1)
-        T( 6); assert int(energy) == 0
+        T( 6); assert energy == 0
 
 
 @suite.test
@@ -149,18 +149,30 @@ def pickle_energy():
     except ImportError:
         import pickle
     with time_traveler(Energy(10, 5)) as (energy, T):
-        T( 0); assert int(energy) == 10
+        T( 0); assert energy == 10
         T( 1); energy.use(5)
-        T( 2); assert int(energy) == 5
+        T( 2); assert energy == 5
         dump = pickle.dumps(energy)
     with time_traveler(pickle.loads(dump)) as (energy, T):
-        T( 3); assert int(energy) == 5
+        T( 3); assert energy == 5
 
 
 @suite.test
 def float_recovery_interval():
     with time_traveler(Energy(10, 0.5)) as (energy, T):
-        T( 0); int(energy) == 10
+        T( 0); energy == 10
         T( 1); energy.use(3)
-        T( 2); int(energy) == 9
-        T( 3); int(energy) == 10
+        T( 2); energy == 9
+        T( 3); energy == 10
+
+
+@suite.test
+def equivalent_energy():
+    assert Energy(10, 10) == Energy(10, 10)
+    assert Energy(5, 10) != Energy(10, 10)
+    e1, e2 = Energy(10, 10), Energy(10, 10)
+    e1.use(time=123)
+    e2.use(time=123)
+    assert e1 == e2
+    e1.use(time=128)
+    assert e1 != e2

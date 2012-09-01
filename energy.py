@@ -170,6 +170,13 @@ class Energy(object):
     def __nonzero__(self):
         return bool(int(self))
 
+    def __eq__(self, val):
+        if isinstance(val, type(self)):
+            return self.__getstate__() == val.__getstate__()
+        elif isinstance(val, (int, float)):
+            return float(self) == val
+        return False
+
     def __getstate__(self):
         return (self.max, self.recovery_interval, self.recovery_quantity, \
                 self.used, self.used_at)
