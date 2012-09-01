@@ -21,10 +21,7 @@ Links
   <http://github.com/sublee/energy/zipball/master#egg=energy-dev>`_
 
 """
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 
 setup(

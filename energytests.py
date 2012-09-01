@@ -19,20 +19,20 @@ def time_traveler(energy):
         if timestamp is None:
             return changed_time[0]
         else:
-            changed_time[0] = datetime.fromtimestamp(timestamp)
+            changed_time[0] = timestamp
     def wrap(meth):
         @wraps(meth)
         def wrapped(*args, **kwargs):
-            kwargs_with_now = kwargs.copy()
-            kwargs_with_now['now'] = T()
+            kwargs_with_time = kwargs.copy()
+            kwargs_with_time['time'] = T()
             try:
-                return meth(*args, **kwargs_with_now)
+                return meth(*args, **kwargs_with_time)
             except TypeError, e:
-                if str(e).endswith('\'now\''):
+                if str(e).endswith('\'time\''):
                     return meth(*args, **kwargs)
                 raise
         return wrapped
-    # Patch methods that has 'now' parameter to use changed time instead of
+    # Patch methods that has 'time' parameter to use changed time instead of
     # real time.
     originals = {}
     for attr in dir(energy):
@@ -41,7 +41,7 @@ def time_traveler(energy):
             spec = getargspec(val)
         except TypeError:
             continue
-        if attr.endswith('__') or 'now' not in spec.args:
+        if attr.endswith('__') or 'time' not in spec.args:
             continue
         originals[attr] = meth = val
         setattr(energy, attr, wrap(meth))
@@ -57,7 +57,7 @@ def init_energy():
     assert isinstance(energy.recovery_interval, int)
     assert energy.recovery_interval == 10
     energy = Energy(10, timedelta(seconds=10))
-    assert isinstance(energy.recovery_interval, float)
+    assert isinstance(energy.recovery_interval, (int, float))
     assert energy.recovery_interval == 10
 
 
@@ -136,9 +136,9 @@ def use_energy_after_recovered():
 def use_energy_in_the_future():
     with time_traveler(Energy(10, 5)) as (energy, T):
         T( 5); energy.use()
-        T( 6); assert energy.seconds_passed() == 1
+        T( 6); assert energy.passed() == 1
         with raises(ValueError):
-            T( 0); energy.seconds_passed()
+            T( 0); energy.passed()
 
 
 @suite.test
@@ -154,3 +154,12 @@ def pickle_energy():
         dump = pickle.dumps(energy)
     with time_traveler(pickle.loads(dump)) as (energy, T):
         T( 3); assert int(energy) == 5
+
+
+@suite.test
+def float_recovery_interval():
+    with time_traveler(Energy(10, 0.5)) as (energy, T):
+        T( 0); int(energy) == 10
+        T( 1); energy.use(3)
+        T( 2); int(energy) == 9
+        T( 3); int(energy) == 10

@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from datetime import datetime, timedelta
-import time
+from time import mktime
 
 
 __copyright__ = 'Copyright 2012 by Heungsub Lee'
@@ -18,6 +18,30 @@ __author__ = 'Heungsub Lee'
 __email__ = 'h''@''subl.ee'
 __version__ = '0.0.1'
 __all__ = ['Energy']
+
+
+def timestamp(time=None):
+    """Makes some timestamp.
+    
+    1. If you pass a :class:`datetime` object, it makes a timestamp from the
+       argument.
+    2. If you pass a timestamp(`int` or `float`), it just returns that.
+    3. If you call it without parameter, it makes a timestamp from the result
+       of :meth:`datetime.utcnow`.
+    """
+    if time is None:
+        time = datetime.utcnow()
+    elif isinstance(time, (int, float)):
+        return int(time)
+    return mktime(time.timetuple())
+
+
+def total_seconds(timedelta):
+    """This function is a fallback for :meth:`timedelta.total_seconds` because
+    it is available from Python 2.7.
+    """
+    ms, s, d = timedelta.microseconds, timedelta.seconds, timedelta.days
+    return (ms + (s + d * 24 * 3600) * 10**6) / 10**6
 
 
 class Energy(object):
@@ -39,7 +63,10 @@ class Energy(object):
         if not isinstance(recovery_quantity, int):
             raise TypeError('recovery_quantity should be int')
         if isinstance(recovery_interval, timedelta):
-            recovery_interval = recovery_interval.total_seconds()
+            try:
+                recovery_interval = recovery_interval.total_seconds()
+            except AttributeError:
+                recovery_interval = total_seconds(recovery_interval)
         if not isinstance(recovery_interval, (int, float)):
             raise TypeError('recovery_interval should be number')
         #: The maximum of energy.
@@ -53,85 +80,83 @@ class Energy(object):
         #: Datetime when using the energy first.
         self.used_at = None
 
-    def current(self, now=None):
+    def current(self, time=None):
         """Calculates the current energy.
 
-        :param now: a datetime when checking the energy. Defaults to
-                    ``datetime.utcnow()``.
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
         """
         if not self.used:
             return self.max
-        current = self.max - self.used + self.recovered(now)
+        current = self.max - self.used + self.recovered(time)
         return max(0, min(self.max, current))
 
-    def use(self, quantity=1, now=None):
+    def use(self, quantity=1, time=None):
         """Uses the energy.
 
         :param quantity: quantity of energy to be used. Defaults to ``1``.
-        :param now: a datetime when using the energy. Defaults to
-                    ``datetime.utcnow()``.
+        :param time: the time when using the energy. Defaults to the present
+                     time in UTC.
         """
-        now = now or datetime.utcnow()
+        time = timestamp(time)
         current = self.current()
         if current < quantity:
             raise ValueError('Not enough energy')
         if current == self.max:
             self.used = quantity
-            self.used_at = now
+            self.used_at = time
         else:
-            self.used = self.max - current + self.recovered(now) + quantity
+            self.used = self.max - current + self.recovered(time) + quantity
         return current - quantity
 
-    def set(self, quantity, now=None):
+    def set(self, quantity, time=None):
         """Sets the energy to the fixed quantity.
 
         :param quantity: quantity of energy to be set
-        :param now: a datetime when setting the energy. Defaults to
-                    ``datetime.utcnow()``.
+        :param time: the time when setting the energy. Defaults to the present
+                     time in UTC.
         """
         if quantity == self.max:
             self.used = 0
             self.used_at = None
         else:
-            self.use(self.current(now) - quantity)
+            self.use(self.current(time) - quantity)
         return quantity
 
-    def recovered(self, now=None):
+    def recovered(self, time=None):
         """Calculates the recovered energy.
 
-        :param now: a datetime when checking the energy. Defaults to
-                    ``datetime.utcnow()``.
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
         """
         recovery_interval = self.recovery_interval
-        seconds_passed = self.seconds_passed(now)
-        if seconds_passed is None:
+        passed = self.passed(time)
+        if passed is None:
             return 0
-        return min(int(seconds_passed / recovery_interval), self.used)
+        return min(int(passed / recovery_interval), self.used)
 
-    def recover_in(self, now=None):
+    def recover_in(self, time=None):
         """Calculates seconds to the next energy recovery.
 
-        :param now: a datetime when checking the energy. Defaults to
-                    ``datetime.utcnow()``.
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
         """
-        seconds_passed = self.seconds_passed(now)
-        if seconds_passed is None:
+        passed = self.passed(time)
+        if passed is None:
             return 0
-        recovery_interval = self.recovery_interval
-        if seconds_passed / recovery_interval >= self.used:
+        if passed / self.recovery_interval >= self.used:
             return 0
-        return recovery_interval - (seconds_passed % self.recovery_interval)
+        return self.recovery_interval - (passed % self.recovery_interval)
 
-    def seconds_passed(self, now=None):
-        """Calculates seconds passed from using the energy first.
+    def passed(self, time=None):
+        """Calculates the seconds passed from using the energy first.
 
-        :param now: a datetime when checking the energy. Defaults to
-                    ``datetime.utcnow()``.
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
         """
-        if not self.used_at:
+        if self.used_at is None:
             return
-        now = now or datetime.utcnow()
-        seconds = (now - self.used_at).total_seconds()
+        seconds = timestamp(time) - self.used_at
         if seconds < 0:
             raise ValueError('Used at the future (+%.2f sec)' % -seconds)
         return seconds
@@ -147,20 +172,20 @@ class Energy(object):
 
     def __getstate__(self):
         return (self.max, self.recovery_interval, self.recovery_quantity, \
-                self.used, time.mktime(self.used_at.utctimetuple()))
+                self.used, self.used_at)
 
     def __setstate__(self, state):
         self.max = state[0]
         self.recovery_interval = state[1]
         self.recovery_quantity = state[2]
         self.used = state[3]
-        self.used_at = datetime.fromtimestamp(state[4])
+        self.used_at = state[4]
 
-    def __repr__(self, now=None):
-        now = now or datetime.utcnow()
-        current, = self.current(now)
+    def __repr__(self, time=None):
+        time = timestamp(time)
+        current = self.current(time)
         rv = '<%s %d/%d' % (type(self).__name__, current, self.max)
         if current < self.max:
-            recover_in = self.recover_in(now)
+            recover_in = self.recover_in(time)
             rv += ' recover in %02d:%02d' % (recover_in / 60, recover_in % 60)
         return rv + '>'
