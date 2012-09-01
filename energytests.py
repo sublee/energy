@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import with_statement
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from functools import wraps
@@ -14,12 +15,12 @@ suite = Tests()
 
 @contextmanager
 def time_traveler(energy):
-    changed_time = [datetime.fromtimestamp(0)]
-    def T(timestamp=None):
-        if timestamp is None:
+    changed_time = [0]
+    def T(time=None):
+        if time is None:
             return changed_time[0]
         else:
-            changed_time[0] = timestamp
+            changed_time[0] = time
     def wrap(meth):
         @wraps(meth)
         def wrapped(*args, **kwargs):
@@ -41,11 +42,11 @@ def time_traveler(energy):
             spec = getargspec(val)
         except TypeError:
             continue
-        if attr.endswith('__') or 'time' not in spec.args:
+        if attr.endswith('__') or 'time' not in spec[0]:
             continue
-        originals[attr] = meth = val
-        setattr(energy, attr, wrap(meth))
-    yield energy, T
+        originals[attr] = val
+        setattr(energy, attr, wrap(val))
+    yield (energy, T)
     # Revert changes
     for attr, meth in originals.iteritems():
         setattr(energy, attr, meth)
