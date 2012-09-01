@@ -109,20 +109,6 @@ class Energy(object):
             self.used = self.max - current + self.recovered(time) + quantity
         return current - quantity
 
-    def set(self, quantity, time=None):
-        """Sets the energy to the fixed quantity.
-
-        :param quantity: quantity of energy to be set
-        :param time: the time when setting the energy. Defaults to the present
-                     time in UTC.
-        """
-        if quantity == self.max:
-            self.used = 0
-            self.used_at = None
-        else:
-            self.use(self.current(time) - quantity)
-        return quantity
-
     def recovered(self, time=None):
         """Calculates the recovered energy.
 
@@ -160,6 +146,28 @@ class Energy(object):
         if seconds < 0:
             raise ValueError('Used at the future (+%.2f sec)' % -seconds)
         return seconds
+
+    def set(self, quantity, time=None):
+        """Sets the energy to the fixed quantity.
+
+        :param quantity: quantity of energy to be set
+        :param time: the time when setting the energy. Defaults to the present
+                     time in UTC.
+        """
+        if quantity == self.max:
+            self.used = 0
+            self.used_at = None
+        else:
+            self.use(self.current(time) - quantity)
+        return quantity
+
+    def reset(self, time=None):
+        """Makes the energy to be full.
+
+        :param time: the time when setting the energy. Defaults to the present
+                     time in UTC.
+        """
+        return self.set(self.max, time)
 
     def __int__(self):
         return self.current()

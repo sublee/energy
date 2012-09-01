@@ -84,6 +84,15 @@ def set_energy():
 
 
 @suite.test
+def reset_energy():
+    energy = Energy(10, 1000)
+    energy.use(5)
+    assert energy == 5
+    energy.reset()
+    assert energy == 10
+
+
+@suite.test
 def cast_energy():
     true_energy = Energy(1, 1000)
     false_energy = Energy(0, 1000)
