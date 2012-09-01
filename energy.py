@@ -92,7 +92,7 @@ class Energy(object):
         return max(0, min(self.max, current))
 
     def use(self, quantity=1, time=None):
-        """Uses the energy.
+        """Consumes the energy.
 
         :param quantity: quantity of energy to be used. Defaults to ``1``.
         :param time: the time when using the energy. Defaults to the present
@@ -109,20 +109,9 @@ class Energy(object):
             self.used = self.max - current + self.recovered(time) + quantity
         return current - quantity
 
-    def recovered(self, time=None):
-        """Calculates the recovered energy.
-
-        :param time: the time when checking the energy. Defaults to the present
-                     time in UTC.
-        """
-        recovery_interval = self.recovery_interval
-        passed = self.passed(time)
-        if passed is None:
-            return 0
-        return min(int(passed / recovery_interval), self.used)
-
     def recover_in(self, time=None):
-        """Calculates seconds to the next energy recovery.
+        """Calculates seconds to the next energy recovery. It the energy is
+        full, it returns `None`.
 
         :param time: the time when checking the energy. Defaults to the present
                      time in UTC.
@@ -133,6 +122,17 @@ class Energy(object):
         if passed / self.recovery_interval >= self.used:
             return 0
         return self.recovery_interval - (passed % self.recovery_interval)
+
+    def recovered(self, time=None):
+        """Calculates the recovered energy.
+
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
+        """
+        passed = self.passed(time)
+        if passed is None:
+            return 0
+        return min(int(passed / self.recovery_interval), self.used)
 
     def passed(self, time=None):
         """Calculates the seconds passed from using the energy first.
