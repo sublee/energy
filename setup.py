@@ -26,7 +26,7 @@ from setuptools import setup
 
 setup(
     name='energy',
-    version='0.0.1',
+    version='0.0.2',
     license='BSD',
     author='Heungsub Lee',
     author_email='h@subl.ee',
