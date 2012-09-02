@@ -27,6 +27,7 @@ def time_traveler(energy):
             kwargs_with_time = kwargs.copy()
             kwargs_with_time['time'] = T()
             try:
+                print meth.__name__, args, kwargs_with_time
                 return meth(*args, **kwargs_with_time)
             except TypeError, e:
                 if str(e).endswith('\'time\''):
@@ -42,7 +43,7 @@ def time_traveler(energy):
             spec = getargspec(val)
         except TypeError:
             continue
-        if attr.endswith('__') or 'time' not in spec[0]:
+        if 'time' not in spec[0]:
             continue
         originals[attr] = val
         setattr(energy, attr, wrap(val))
@@ -185,3 +186,21 @@ def equivalent_energy():
     assert e1 == e2
     e1.use(time=128)
     assert e1 != e2
+
+
+@suite.test
+def set_max_energy():
+    with time_traveler(Energy(10, 300)) as (energy, T):
+        T( 0); assert energy == 10
+        T( 1); energy.set_max(11)
+        T( 2); assert energy == 11
+        T( 3); energy.use()
+        T( 4); assert energy == 10
+        T( 5); energy.set_max(12)
+        T( 6); assert energy == 10
+        T( 7); energy.set_max(9)
+        T( 8); assert energy == 9
+        T( 9); energy.set_max(1)
+        T(10); assert energy == 1
+        T(11); energy.set_max(10)
+        T(12); assert energy == 10

@@ -169,6 +169,21 @@ class Energy(object):
         """
         return self.set(self.max, time)
 
+    def set_max(self, max, time=None):
+        """Changes the maximum energy. It also resolves the state if the energy
+        is going to recovery.
+
+        :param max: quantity of maximum energy to be set
+        :param time: the time when setting the energy. Defaults to the present
+                     time in UTC.
+        """
+        if self.recover_in(time):
+            self.used += max - self.max
+        self.max = max
+
+    def set_recovery_interval(self, recovery_interval, time=None):
+        self.recovery_interval = recovery_interval
+
     def __int__(self):
         return self.current()
 
@@ -196,11 +211,10 @@ class Energy(object):
         self.used = state[3]
         self.used_at = state[4]
 
-    def __repr__(self, time=None):
-        time = timestamp(time)
-        current = self.current(time)
+    def __repr__(self):
+        current = self.current()
         rv = '<%s %d/%d' % (type(self).__name__, current, self.max)
         if current < self.max:
-            recover_in = self.recover_in(time)
+            recover_in = self.recover_in()
             rv += ' recover in %02d:%02d' % (recover_in / 60, recover_in % 60)
         return rv + '>'
