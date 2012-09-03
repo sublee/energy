@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from datetime import datetime, timedelta
+import sys
 from time import mktime
 
 
@@ -36,12 +37,28 @@ def timestamp(time=None, default_time_getter=datetime.utcnow):
     return int(time)
 
 
-def total_seconds(timedelta):
-    """This function is a fallback for :meth:`timedelta.total_seconds` because
-    it is available from Python 2.7.
-    """
-    ms, s, d = timedelta.microseconds, timedelta.seconds, timedelta.days
-    return (ms + (s + d * 24 * 3600) * 10**6) / 10**6
+if sys.version_info < (2, 6):
+    class property(property):
+        # A fallback of property under Python 2.6. The code is from
+        # http://blog.devork.be/2008/04/xsetter-syntax-in-python-25.html
+        def __init__(self, fget, *args, **kwargs):
+            self.__doc__ = fget.__doc__
+            super(property, self).__init__(fget, *args, **kwargs)
+        def setter(self, fset):
+            ns = sys._getframe(1).f_locals
+            for k, v in ns.iteritems():
+                if v == self:
+                    propname = k
+                    break
+            ns[propname] = property(self.fget, fset, self.fdel, self.__doc__)
+            return ns[propname]
+
+
+if sys.version_info < (2, 7):
+    def total_seconds(timedelta):
+        # A fallback of timedelta.total_seconds under Python 2.7.
+        ms, s, d = timedelta.microseconds, timedelta.seconds, timedelta.days
+        return (ms + (s + d * 24 * 3600) * 10**6) / 10**6
 
 
 class Energy(object):
