@@ -20,20 +20,20 @@ __version__ = '0.0.2'
 __all__ = ['Energy']
 
 
-def timestamp(time=None):
+def timestamp(time=None, default_time_getter=datetime.utcnow):
     """Makes some timestamp.
     
     1. If you pass a :class:`datetime` object, it makes a timestamp from the
        argument.
     2. If you pass a timestamp(`int` or `float`), it just returns that.
     3. If you call it without parameter, it makes a timestamp from the result
-       of :meth:`datetime.utcnow`.
+       of `default_time_getter`.
     """
     if time is None:
-        time = datetime.utcnow()
-    elif isinstance(time, (int, float)):
-        return int(time)
-    return mktime(time.timetuple())
+        time = default_time_getter()
+    if isinstance(time, datetime):
+        return mktime(time.timetuple())
+    return int(time)
 
 
 def total_seconds(timedelta):
@@ -51,11 +51,16 @@ class Energy(object):
 
     :param max: maximum of energy
     :param recovery_interval: an interval in seconds to recover energy. It
-                              should be :type:`int`, :type:`float` or
-                              :type:`timedelta`.
+                              should be `int`, `float` or `timedelta`.
     :param recovery_quantity: a quantity of once energy recovery. Defaults to
                               ``1``.
     """
+
+    #: Quantity of used energy.
+    used = 0
+
+    #: A time when using the energy first.
+    used_at = None
 
     def __init__(self, max, recovery_interval, recovery_quantity=1):
         if not isinstance(max, int):
@@ -69,16 +74,20 @@ class Energy(object):
                 recovery_interval = total_seconds(recovery_interval)
         if not isinstance(recovery_interval, (int, float)):
             raise TypeError('recovery_interval should be number')
-        #: The maximum of energy.
         self.max = max
         #: The interval in seconds to recover energy.
         self.recovery_interval = recovery_interval
         #: The quantity of once energy recovery.
         self.recovery_quantity = recovery_quantity
-        #: Quantity of used energy.
-        self.used = 0
-        #: Datetime when using the energy first.
-        self.used_at = None
+
+    @property
+    def max(self):
+        """The maximum of energy."""
+        return self._max
+
+    @max.setter
+    def max(self, max):
+        self.config(max=max)
 
     def current(self, time=None):
         """Calculates the current energy.
@@ -89,7 +98,7 @@ class Energy(object):
         if not self.used:
             return self.max
         current = self.max - self.used + self.recovered(time)
-        return max(0, min(self.max, current))
+        return max(0, current)
 
     def use(self, quantity=1, time=None):
         """Consumes the energy.
@@ -102,7 +111,7 @@ class Energy(object):
         current = self.current()
         if current < quantity:
             raise ValueError('Not enough energy')
-        if current == self.max:
+        if current - quantity < self.max <= current:
             self.used = quantity
             self.used_at = time
         else:
@@ -117,10 +126,8 @@ class Energy(object):
                      time in UTC.
         """
         passed = self.passed(time)
-        if passed is None:
-            return 0
-        if passed / self.recovery_interval >= self.used:
-            return 0
+        if passed is None or passed / self.recovery_interval >= self.used:
+            return
         return self.recovery_interval - (passed % self.recovery_interval)
 
     def recovered(self, time=None):
@@ -154,8 +161,8 @@ class Energy(object):
         :param time: the time when setting the energy. Defaults to the present
                      time in UTC.
         """
-        if quantity == self.max:
-            self.used = 0
+        if quantity >= self.max:
+            self.used = self.max - quantity
             self.used_at = None
         else:
             self.use(self.current(time) - quantity)
@@ -169,29 +176,28 @@ class Energy(object):
         """
         return self.set(self.max, time)
 
-    def set_max(self, max, time=None):
-        """Changes the maximum energy. It also resolves the state if the energy
-        is going to recovery.
+    def config(self, max=None, recovery_interval=None, time=None):
+        """Updates :attr:`max` or :attr:`recovery_interval`.
 
         :param max: quantity of maximum energy to be set
         :param time: the time when setting the energy. Defaults to the present
                      time in UTC.
         """
-        if self.recover_in(time):
-            self.used += max - self.max
-        self.max = max
+        if max is not None:
+            if self.recover_in(time):
+                self.used += max - self._max
+            self._max = max
+        if recovery_interval is not None:
+            self.recovery_interval = recovery_interval
 
-    def set_recovery_interval(self, recovery_interval, time=None):
-        self.recovery_interval = recovery_interval
+    def __int__(self, time=None):
+        return self.current(time)
 
-    def __int__(self):
-        return self.current()
+    def __float__(self, time=None):
+        return float(self.__int__(time))
 
-    def __float__(self):
-        return float(int(self))
-
-    def __nonzero__(self):
-        return bool(int(self))
+    def __nonzero__(self, time=None):
+        return bool(self.__int__(time))
 
     def __eq__(self, val):
         if isinstance(val, type(self)):
@@ -211,10 +217,10 @@ class Energy(object):
         self.used = state[3]
         self.used_at = state[4]
 
-    def __repr__(self):
-        current = self.current()
+    def __repr__(self, time=None):
+        current = self.current(time)
         rv = '<%s %d/%d' % (type(self).__name__, current, self.max)
         if current < self.max:
-            recover_in = self.recover_in()
+            recover_in = self.recover_in(time)
             rv += ' recover in %02d:%02d' % (recover_in / 60, recover_in % 60)
         return rv + '>'
