@@ -62,7 +62,8 @@ class Energy(object):
     #: A time when using the energy first.
     used_at = None
 
-    def __init__(self, max, recovery_interval, recovery_quantity=1):
+    def __init__(self, max, recovery_interval, recovery_quantity=1,
+                 used=0, used_at=None):
         if not isinstance(max, int):
             raise TypeError('max should be int')
         if not isinstance(recovery_quantity, int):
@@ -79,6 +80,9 @@ class Energy(object):
         self.recovery_interval = recovery_interval
         #: The quantity of once energy recovery.
         self.recovery_quantity = recovery_quantity
+        # to retrieve from a database
+        self.used = used
+        self.used_at = used_at
 
     @property
     def max(self):

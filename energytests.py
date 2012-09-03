@@ -144,6 +144,21 @@ def pickle_energy():
         T( 2); assert energy == 5
         dump = pickle.dumps(energy)
         loaded_energy = pickle.loads(dump)
+        assert energy == loaded_energy
+        T( 3); assert energy == 5
+
+
+@suite.test
+def save_and_retrieve_energy():
+    energy = Energy(10, 5)
+    with time_traveler() as T:
+        T( 0); assert energy == 10
+        T( 1); energy.use(5)
+        T( 2); assert energy == 5
+        saved = energy.used
+        saved_used, saved_used_at = energy.used, energy.used_at
+        loaded_energy = Energy(10, 5, used=saved_used, used_at=saved_used_at)
+        assert energy == loaded_energy
         T( 3); assert energy == 5
 
 
