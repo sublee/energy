@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 from functools import partial
 from inspect import getargspec
+import sys
 
 from attest import Tests, assert_hook, raises
 
@@ -184,7 +185,7 @@ def equivalent_energy():
     assert e1 != e2
 
 
-@suite.test
+@suite.test_if((2, 5) < sys.version_info[1:])
 def set_max_energy():
     energy = Energy(10, 300)
     with time_traveler() as T:
