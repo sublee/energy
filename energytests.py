@@ -224,3 +224,6 @@ def bonus_energy():
         T( 5); assert energy.recover_in() is None
         T( 6); energy.use(5)
         T( 7); assert energy.recover_in() == 299
+        T( 8); assert energy.recover_in() == 298
+        T( 9); energy.set(15)
+        T(10); assert energy.recover_in() is None
