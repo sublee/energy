@@ -17,7 +17,7 @@ __copyright__ = 'Copyright 2012 by Heungsub Lee'
 __license__ = 'BSD License'
 __author__ = 'Heungsub Lee'
 __email__ = 'h''@''subl.ee'
-__version__ = '0.0.2'
+__version__ = '0.1.0'
 __all__ = ['Energy']
 
 
@@ -62,11 +62,11 @@ if sys.version_info < (2, 7):
 
 
 class Energy(object):
-    """Energy is a consumable stuff of social gamers. Gamers use energy for
-    some actions like farming, housing or any social actions. Then consumed
-    energy will be recovered after few minutes.
+    """A consumable and recoverable stuff in social gamers. Think over
+    reasonable energy parameters for your own game. Energy may decide return
+    period of your players.
 
-    :param max: maximum of energy
+    :param max: maximum energy
     :param recovery_interval: an interval in seconds to recover energy. It
                               should be `int`, `float` or `timedelta`.
     :param recovery_quantity: a quantity of once energy recovery. Defaults to
@@ -97,13 +97,12 @@ class Energy(object):
         self.recovery_interval = recovery_interval
         #: The quantity of once energy recovery.
         self.recovery_quantity = recovery_quantity
-        # to retrieve from a database
         self.used = used
         self.used_at = used_at
 
     @property
     def max(self):
-        """The maximum of energy."""
+        """The maximum energy."""
         return self._max
 
     @max.setter
@@ -111,7 +110,15 @@ class Energy(object):
         self.config(max=max)
 
     def current(self, time=None):
-        """Calculates the current energy.
+        """Calculates the current energy. This equivalents to casting to `int`
+        but can work with specified time.
+
+        >>> energy = Energy(10, 300)
+        >>> energy.use()
+        >>> energy.current()
+        9
+        >>> int(energy)
+        9
 
         :param time: the time when checking the energy. Defaults to the present
                      time in UTC.
@@ -137,11 +144,10 @@ class Energy(object):
             self.used_at = time
         else:
             self.used = self.max - current + self.recovered(time) + quantity
-        return current - quantity
 
     def recover_in(self, time=None):
-        """Calculates seconds to the next energy recovery. It the energy is
-        full, it returns `None`.
+        """Calculates seconds to the next energy recovery. If the energy is
+        full, this returns ``None``.
 
         :param time: the time when checking the energy. Defaults to the present
                      time in UTC.
@@ -152,7 +158,7 @@ class Energy(object):
         return self.recovery_interval - (passed % self.recovery_interval)
 
     def recovered(self, time=None):
-        """Calculates the recovered energy.
+        """Calculates the recovered energy from the player used energy first.
 
         :param time: the time when checking the energy. Defaults to the present
                      time in UTC.
@@ -178,6 +184,19 @@ class Energy(object):
     def set(self, quantity, time=None):
         """Sets the energy to the fixed quantity.
 
+        >>> energy = Energy(10, 300)
+        >>> print energy
+        <Energy 10/10>
+        >>> energy.set(3)
+        >>> print energy
+        <Energy 3/10 recover in 05:00>
+
+        You can also set over the maximum when give bonus energy.
+
+        >>> energy.set(15)
+        >>> print energy
+        <Energy 15/10>
+
         :param quantity: quantity of energy to be set
         :param time: the time when setting the energy. Defaults to the present
                      time in UTC.
@@ -187,10 +206,10 @@ class Energy(object):
             self.used_at = None
         else:
             self.use(self.current(time) - quantity)
-        return quantity
 
     def reset(self, time=None):
-        """Makes the energy to be full.
+        """Makes the energy to be full. Most social games reset energy when the
+        player reaches higher level.
 
         :param time: the time when setting the energy. Defaults to the present
                      time in UTC.

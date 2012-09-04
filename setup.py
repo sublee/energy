@@ -21,15 +21,12 @@ Links
   <http://github.com/sublee/energy/zipball/master#egg=energy-dev>`_
 
 """
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 
 setup(
     name='energy',
-    version='0.0.2',
+    version='0.1.0',
     license='BSD',
     author='Heungsub Lee',
     author_email='h@subl.ee',
