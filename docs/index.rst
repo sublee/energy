@@ -17,7 +17,7 @@ energy system. It will make players to come back to the game periodically.
 
 In popular social games such as `FarmVille <http://www.facebook.com/FarmVille>`_
 or `Zoo Invasion <http://apps.facebook.com/zooinvasion/?campaign=sublee&kt_st1=
-docs&kt_st2=python&kt_st3=energy>`_ or `The Sims Social <http://www.facebook.
+project&kt_st2=energy&kt_st3=docs>`_ or `The Sims Social <http://www.facebook.
 com/TheSimsSocial>`_, this system drives high retention rate.
 
 How to use?
@@ -90,10 +90,9 @@ API
 Licensing and Author
 ~~~~~~~~~~~~~~~~~~~~
 
-This project licensed with `BSD <http://en.wikipedia.org/wiki/BSD_licenses>`_,
-so feel free to use and manipulate as long as you respect these licenses. See
-`LICENSE <https://github.com/sublee/energy/blob/master/LICENSE>`_ for the
+This project licensed with `BSD <http://en.wikipedia.org/wiki/BSD_licenses>`_.
+See `LICENSE <https://github.com/sublee/energy/blob/master/LICENSE>`_ for the
 details.
 
-I'm `Heungsub Lee <http://subl.ee/>`_. Any regarding questions or patches are
-welcomed.
+I'm `Heungsub Lee <http://subl.ee/>`_, a game developer. Any regarding
+questions or patches are welcomed.
