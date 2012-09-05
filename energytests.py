@@ -204,16 +204,7 @@ def set_max_energy():
 
 
 @suite.test
-def repr_energy():
-    energy = Energy(10, 300)
-    with time_traveler() as T:
-        T( 0); assert repr(energy) == '<Energy 10/10>'
-        T( 1); energy.use()
-        T( 2); assert repr(energy) == '<Energy 9/10 recover in 04:59>'
-
-
-@suite.test
-def bonus_energy():
+def extra_energy():
     energy = Energy(10, 300)
     with time_traveler() as T:
         T( 0); energy.set(15)
@@ -227,3 +218,12 @@ def bonus_energy():
         T( 8); assert energy.recover_in() == 298
         T( 9); energy.set(15)
         T(10); assert energy.recover_in() is None
+
+
+@suite.test
+def repr_energy():
+    energy = Energy(10, 300)
+    with time_traveler() as T:
+        T( 0); assert repr(energy) == '<Energy 10/10>'
+        T( 1); energy.use()
+        T( 2); assert repr(energy) == '<Energy 9/10 recover in 04:59>'
