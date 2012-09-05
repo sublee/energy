@@ -29,6 +29,12 @@ Install via `PyPI <http://pypi.python.org/pypi/energy>`_ first:
 
    $ eash_install energy
 
+Or check out developement version:
+
+.. sourcecode:: bash
+
+   $ git clone git://github.com/sublee/energy.git
+
 You can implement energy system using just :class:`Energy` object. It needs to
 be set maximum energy and recovery interval in seconds:
 
