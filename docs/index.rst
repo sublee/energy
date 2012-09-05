@@ -8,17 +8,19 @@ for social games
 What is energy?
 ~~~~~~~~~~~~~~~
 
-Energy is a consumable and recoverable stuff in social games. It limits how far
-players can advance in each session.
+Oh, you are kidding. You already know what energy is. But, just to clarify, 
+energy is a concept that is consumable and recoverable in social games.
+It limits how far players can advance in each session.
 
-Players use energy to do actions like farming, housing, or social actions. Then
-consumed energy will be recovered after few minutes. Recovery is the essence of
-energy system. It will make players to come back to the game periodically.
+Players use energy to perform actions such as farming, housing, or social
+interactions. Then consumed energy will be recovered after certain amount of 
+time designed by the developer. Recovery is the essence of energy system.
+It will make players to come back to the game periodically.
 
-In popular social games such as `FarmVille <http://www.facebook.com/FarmVille>`_
-or `Zoo Invasion <http://apps.facebook.com/zooinvasion/?campaign=sublee&kt_st1=
+Popular social games such as `FarmVille <http://www.facebook.com/FarmVille>`_
+, `Zoo Invasion <http://apps.facebook.com/zooinvasion/?campaign=sublee&kt_st1=
 project&kt_st2=energy&kt_st3=docs>`_ or `The Sims Social <http://www.facebook.
-com/TheSimsSocial>`_, this system drives high retention rate.
+com/TheSimsSocial>`_ are benefited from the system in high retention rate.
 
 How to use?
 ~~~~~~~~~~~
@@ -29,17 +31,17 @@ Install via `PyPI <http://pypi.python.org/pypi/energy>`_ first:
 
    $ eash_install energy
 
-You can implement energy system using just :class:`Energy` object. It needs to
-be set maximum energy and recovery interval in seconds:
+What you need to implement energy system is only :class:`Energy` object. 
+Maximum energy and recovery interval have to be set in seconds before use:
 
 ::
 
    from energy import Energy
    energy = Energy(max=10, recovery_interval=300)
 
-The example :class:`Energy` object has 10 as maximum and will recover in every
-5 minutes. When a player does some action that needs to consume energy just
-call :meth:`Energy.use` method:
+The example :class:`Energy` object has 10 of maximum and will recover in every
+5 minutes. When a player performs a action that requires energy just call
+:meth:`Energy.use` method:
 
 .. sourcecode:: pycon
 
@@ -49,7 +51,7 @@ call :meth:`Energy.use` method:
    >>> print energy
    <Energy 9/10 recover in 05:00>
 
-But if the player has not enough energy, it throws :exc:`ValueError`:
+If the player has not enough energy, it throws :exc:`ValueError`:
 
 .. sourcecode:: pycon
 
@@ -62,13 +64,13 @@ But if the player has not enough energy, it throws :exc:`ValueError`:
        raise ValueError('Not enough energy')
    ValueError: Not enough energy
 
-You may want to save :class:`Energy` object bound to some player into the
-database with the player data.
+You may want to save :class:`Energy` object within a specific player's data
+in database.
 
-An :class:`Energy` object is serializable by Pickle. So if you have a key-value
-storage, you can save an :class:`Energy` object with a player easily. If not,
+An :class:`Energy` object is serializable by Pickle. If you have a key-value
+storage, you can save an :class:`Energy` object with a player easily. Or,
 you should prepare some columns for :attr:`Energy.used` and
-:attr:`Energy.used_at` in your database and save them. Here’s a way to
+:attr:`Energy.used_at` in your database to save them. Here’s an example of
 save/load an :class:`Energy` object:
 
 .. sourcecode:: pycon
@@ -95,4 +97,4 @@ See `LICENSE <https://github.com/sublee/energy/blob/master/LICENSE>`_ for the
 details.
 
 I'm `Heungsub Lee <http://subl.ee/>`_, a game developer. Any regarding
-questions or patches are welcomed.
+questions or patches will be welcomed.
