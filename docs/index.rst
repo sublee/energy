@@ -12,6 +12,9 @@ Oh, you are kidding. You already know what energy is. But, just to clarify,
 energy is a concept that is consumable and recoverable in social games. It
 limits how far players can advance in each session.
 
+.. image:: variations.gif
+   :align: center
+
 Players use energy to perform actions such as farming, housing, or social
 interactions. Then consumed energy will be recovered after certain amount of
 time designed by the developer. Recovery is the essence of energy system. It
