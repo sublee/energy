@@ -13,7 +13,6 @@ energy is a concept that is consumable and recoverable in social games. It
 limits how far players can advance in each session.
 
 .. image:: variations.gif
-   :align: center
 
 Players use energy to perform actions such as farming, housing, or social
 interactions. Then consumed energy will be recovered after certain amount of
@@ -32,7 +31,7 @@ Install via `PyPI <http://pypi.python.org/pypi/energy>`_ first:
 
 .. sourcecode:: bash
 
-   $ eash_install energy
+   $ easy_install energy
 
 Or check out developement version:
 
