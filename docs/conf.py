@@ -12,11 +12,11 @@
 # serve to show the default.
 
 import sys, os
-sys.path.append(os.path.abspath('_themes/energy'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+sys.path.insert(0, os.path.abspath('_themes'))
 sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration -----------------------------------------------------
@@ -97,8 +97,7 @@ html_theme = 'energy'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {'index_logo_alt': project,
-                      'github_fork': 'sublee/energy',
+html_theme_options = {'github_fork': 'sublee/energy',
                       'google_analytics': 'UA-28655602-1'}
 
 # Add any paths that contain custom themes here, relative to this directory.

@@ -1,7 +1,7 @@
 Energy
 ======
+
 for social games
-----------------
 
 .. module:: energy
 
