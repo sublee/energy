@@ -1,0 +1,12 @@
+Version 0.1.1
+-------------
+
+Released on Sep 25th 2012.
+
+- supports the argumented arithmetic assignment (`+=`, `-=`).
+- fixes a calculation error when consuming energy over the maximum.
+
+Version 0.1.0
+-------------
+
+First public preview release.

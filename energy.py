@@ -17,7 +17,7 @@ __copyright__ = 'Copyright 2012 by Heungsub Lee'
 __license__ = 'BSD License'
 __author__ = 'Heungsub Lee'
 __email__ = 'h''@''subl.ee'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __all__ = ['Energy']
 
 
@@ -107,6 +107,7 @@ class Energy(object):
 
     @max.setter
     def max(self, max):
+        """Configurates the maximum energy."""
         self.config(max=max)
 
     def current(self, time=None):
@@ -140,7 +141,7 @@ class Energy(object):
         if current < quantity:
             raise ValueError('Not enough energy')
         if current - quantity < self.max <= current:
-            self.used = quantity
+            self.used = quantity - current + self.max
             self.used_at = time
         else:
             self.used = self.max - current + self.recovered(time) + quantity
@@ -231,20 +232,40 @@ class Energy(object):
             self.recovery_interval = recovery_interval
 
     def __int__(self, time=None):
+        """Type-casting to `int`."""
         return self.current(time)
 
     def __float__(self, time=None):
+        """Type-casting to `float`."""
         return float(self.__int__(time))
 
     def __nonzero__(self, time=None):
+        """Type-casting to `bool`."""
         return bool(self.__int__(time))
 
     def __eq__(self, val):
+        """Checks if same energy. An operand can be :class:`Energy` or number.
+        """
         if isinstance(val, type(self)):
             return self.__getstate__() == val.__getstate__()
         elif isinstance(val, (int, float)):
             return float(self) == val
         return False
+
+    def __iadd__(self, val, time=None):
+        """Increases by the value.
+
+        .. versionadded:: 0.1.1
+        """
+        self.set(self.current(time) + val, time)
+        return self
+
+    def __isub__(self, val, time=None):
+        """Decreases by the value.
+
+        .. versionadded:: 0.1.1
+        """
+        return self.__iadd__(-val, time)
 
     def __getstate__(self):
         return (self.max, self.recovery_interval, self.recovery_quantity, \

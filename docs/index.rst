@@ -97,6 +97,11 @@ API
 .. autoclass:: Energy
    :members:
 
+Changelog
+~~~~~~~~~
+
+.. include:: ../CHANGES
+
 Licensing and Author
 ~~~~~~~~~~~~~~~~~~~~
 

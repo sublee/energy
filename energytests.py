@@ -227,3 +227,19 @@ def repr_energy():
         T( 0); assert repr(energy) == '<Energy 10/10>'
         T( 1); energy.use()
         T( 2); assert repr(energy) == '<Energy 9/10 recover in 04:59>'
+
+
+@suite.test
+def arithmetic_assign_energy():
+    energy = Energy(10, 3)
+    with time_traveler() as T:
+        T( 0); energy += 10
+        T( 1); assert energy == 20
+        T( 2); energy -= 13
+        T( 3); assert energy == 7
+        T( 6); assert energy == 8
+        T( 7); energy += 10
+        T( 8); energy -= 10;
+        T( 9); assert energy.recover_in() == 2
+        T(10); assert energy.recover_in() == 1
+        T(11); assert energy == 9
