@@ -67,8 +67,8 @@ class Energy(object):
     period of your players.
 
     :param max: maximum energy
-    :param recovery_interval: an interval in seconds to recover energy. It
-                              should be `int`, `float` or `timedelta`.
+    :param recovery_interval: an interval in seconds to recover energy
+    :type recovery_interval: number or `timedelta`
     :param recovery_quantity: a quantity of once energy recovery. Defaults to
                               ``1``.
     """
