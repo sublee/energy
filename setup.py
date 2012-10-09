@@ -32,13 +32,16 @@ Links
 """
 from setuptools import setup
 
+import energy
+
 
 setup(
-    name='energy',
-    version='0.1.1',
-    license='BSD',
-    author='Heungsub Lee',
-    author_email='h@subl.ee',
+    name=energy.__name__,
+    version=energy.__version__,
+    license=energy.__license__,
+    author=energy.__author__,
+    author_email=energy.__author_email__,
+    url=energy.__url__,
     description='Energy system for social games',
     long_description=__doc__,
     platforms='any',

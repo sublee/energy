@@ -14,10 +14,11 @@ from time import mktime
 
 
 __copyright__ = 'Copyright 2012 by Heungsub Lee'
-__license__ = 'BSD License'
-__author__ = 'Heungsub Lee'
-__email__ = 'h''@''subl.ee'
 __version__ = '0.1.1'
+__license__ = 'BSD'
+__author__ = 'Heungsub Lee'
+__author_email__ = 'h''@''subl.ee'
+__url__ = 'http://packages.python.org/energy'
 __all__ = ['Energy']
 
 
