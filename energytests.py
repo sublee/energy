@@ -155,11 +155,29 @@ def save_and_retrieve_energy():
         T( 0); assert energy == 10
         T( 1); energy.use(5)
         T( 2); assert energy == 5
+        T( 3)
         saved = energy.used
         saved_used, saved_used_at = energy.used, energy.used_at
+        T( 11)
+        assert energy == 7
         loaded_energy = Energy(10, 5, used=saved_used, used_at=saved_used_at)
-        assert energy == loaded_energy
-        T( 3); assert energy == 5
+        assert loaded_energy == 7
+        assert loaded_energy == energy
+        loaded_energy2 = Energy(10, 5)
+        loaded_energy2.used = saved_used
+        loaded_energy2.used_at = saved_used_at
+        assert loaded_energy2 == 7
+        assert loaded_energy2 == energy
+        loaded_energy3 = object.__new__(Energy)
+        loaded_energy3.__init__(10, 5, used=saved_used, used_at=saved_used_at)
+        assert loaded_energy3 == 7
+        assert loaded_energy3 == energy
+        loaded_energy4 = object.__new__(Energy)
+        loaded_energy4.used = saved_used
+        loaded_energy4.used_at = saved_used_at
+        loaded_energy4.__init__(10, 5, used=saved_used, used_at=saved_used_at)
+        assert loaded_energy4 == 7
+        assert loaded_energy4 == energy
 
 
 @suite.test

@@ -1,3 +1,9 @@
+Version 0.1.2
+
+Released on Oct 12th 2012.
+
+- fixes an error when the energy has `used_at` before initialization.
+
 Version 0.1.1
 -------------
 

@@ -93,7 +93,7 @@ class Energy(object):
                 recovery_interval = total_seconds(recovery_interval)
         if not isinstance(recovery_interval, (int, float)):
             raise TypeError('recovery_interval should be number')
-        self.max = max
+        self._max = max
         #: The interval in seconds to recover energy.
         self.recovery_interval = recovery_interval
         #: The quantity of once energy recovery.
