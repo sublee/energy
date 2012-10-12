@@ -72,6 +72,7 @@ class Energy(object):
     :type recovery_interval: number or `timedelta`
     :param recovery_quantity: a quantity of once energy recovery. Defaults to
                               ``1``.
+    :raise TypeError: some argument isn't valid type
     """
 
     #: Quantity of used energy.
@@ -136,6 +137,7 @@ class Energy(object):
         :param quantity: quantity of energy to be used. Defaults to ``1``.
         :param time: the time when using the energy. Defaults to the present
                      time in UTC.
+        :raise ValueError: not enough energy
         """
         time = timestamp(time)
         current = self.current(time)
@@ -175,6 +177,7 @@ class Energy(object):
 
         :param time: the time when checking the energy. Defaults to the present
                      time in UTC.
+        :raise ValueError: used at the future
         """
         if self.used_at is None:
             return
