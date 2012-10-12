@@ -14,7 +14,7 @@ from time import mktime
 
 
 __copyright__ = 'Copyright 2012 by Heungsub Lee'
-__version__ = '0.1.3'
+__version__ = '0.1.2'
 __license__ = 'BSD'
 __author__ = 'Heungsub Lee'
 __author_email__ = 'h''@''subl.ee'
@@ -138,7 +138,7 @@ class Energy(object):
                      time in UTC.
         """
         time = timestamp(time)
-        current = self.current()
+        current = self.current(time)
         if current < quantity:
             raise ValueError('Not enough energy')
         if current - quantity < self.max <= current:

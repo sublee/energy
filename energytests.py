@@ -40,6 +40,7 @@ def init_energy():
 
 @suite.test
 def use_energy():
+    from energy import timestamp
     energy = Energy(10, 1000)
     assert energy == 10
     energy.use()
@@ -48,6 +49,9 @@ def use_energy():
     assert energy == 4
     with raises(ValueError):
         energy.use(5)
+    energy.use(10, timestamp() + 10000)
+    with raises(ValueError):
+        energy.use(10, timestamp() + 10010)
 
 
 @suite.test
