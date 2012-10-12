@@ -155,10 +155,10 @@ def save_and_retrieve_energy():
         T( 0); assert energy == 10
         T( 1); energy.use(5)
         T( 2); assert energy == 5
-        T( 3)
+        T(3)
         saved = energy.used
         saved_used, saved_used_at = energy.used, energy.used_at
-        T( 11)
+        T(11)
         assert energy == 7
         loaded_energy = Energy(10, 5, used=saved_used, used_at=saved_used_at)
         assert loaded_energy == 7
@@ -194,12 +194,17 @@ def float_recovery_interval():
 def equivalent_energy():
     assert Energy(10, 10) == Energy(10, 10)
     assert Energy(5, 10) != Energy(10, 10)
-    e1, e2 = Energy(10, 10), Energy(10, 10)
-    e1.use(time=123)
-    e2.use(time=123)
-    assert e1 == e2
-    e1.use(time=128)
-    assert e1 != e2
+    e1, e2, e3 = Energy(10, 10), Energy(10, 10), Energy(8, 10)
+    with time_traveler() as T:
+        T(123)
+        e1.use()
+        e2.use()
+        assert e1 == e2
+        T(128)
+        e1.use()
+        assert e1 != e2
+        assert int(e1) == int(e3)
+        assert e1 != e3
 
 
 @suite.test
@@ -245,6 +250,24 @@ def repr_energy():
         T( 0); assert repr(energy) == '<Energy 10/10>'
         T( 1); energy.use()
         T( 2); assert repr(energy) == '<Energy 9/10 recover in 04:59>'
+
+
+@suite.test
+def compare_energy():
+    energy = Energy(10, 300)
+    with time_traveler() as T:
+        T(0)
+        assert energy == 10
+        assert energy > 9
+        assert 9 < energy
+        assert energy < 11
+        assert 11 > energy
+        assert 9 < energy < 11
+        assert energy <= 10
+        assert energy >= 10
+        assert 10 <= energy
+        assert 10 >= energy
+        assert 10 <= energy <= 10
 
 
 @suite.test

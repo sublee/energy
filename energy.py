@@ -14,7 +14,7 @@ from time import mktime
 
 
 __copyright__ = 'Copyright 2012 by Heungsub Lee'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __license__ = 'BSD'
 __author__ = 'Heungsub Lee'
 __author_email__ = 'h''@''subl.ee'
@@ -244,14 +244,57 @@ class Energy(object):
         """Type-casting to `bool`."""
         return bool(self.__int__(time))
 
-    def __eq__(self, val):
-        """Checks if same energy. An operand can be :class:`Energy` or number.
+    def __eq__(self, val, time=None):
+        """:class:`Energy` == `val`.
+
+        :param val: the operand
+        :type val: :class:`Energy` or number
         """
         if isinstance(val, type(self)):
             return self.__getstate__() == val.__getstate__()
         elif isinstance(val, (int, float)):
-            return float(self) == val
+            return float(self.current(time)) == val
         return False
+
+    def __lt__(self, val, time=None):
+        """:class:`Energy` < `val`.
+
+        :param val: the operand
+        :type val: number
+
+        .. versionadded:: 0.1.3
+        """
+        return self.current(time) < val
+
+    def __le__(self, val, time=None):
+        """:class:`Energy` <= `val`.
+
+        :param val: the operand
+        :type val: number
+
+        .. versionadded:: 0.1.3
+        """
+        return self.current(time) <= val
+
+    def __gt__(self, val, time=None):
+        """:class:`Energy` > `val`.
+
+        :param number val: the operand
+        :type val: number
+
+        .. versionadded:: 0.1.3
+        """
+        return self.current(time) > val
+
+    def __ge__(self, val, time=None):
+        """:class:`Energy` >= `val`.
+
+        :param val: the operand
+        :type val: number
+
+        .. versionadded:: 0.1.3
+        """
+        return self.current(time) >= val
 
     def __iadd__(self, val, time=None):
         """Increases by the value.
