@@ -8,9 +8,9 @@ for social games
 What is energy?
 ~~~~~~~~~~~~~~~
 
-Oh, you are kidding. You already know what energy is. But, just to clarify,
-energy is a concept that is consumable and recoverable in social games. It
-limits how far players can advance in each session.
+Oh, you are kidding. You already know what energy is. But, just to make it
+clear, energy is a concept that is consumable and recoverable in social games.
+It limits how far players can advance in each session.
 
 .. image:: variations.gif
 
@@ -39,7 +39,7 @@ Or check out developement version:
 
    $ git clone git://github.com/sublee/energy.git
 
-What you need to implement energy system is only :class:`Energy` object.
+The only thing you need to implement energy system is :class:`Energy` object.
 Maximum energy and recovery interval have to be set in seconds before use:
 
 ::
@@ -105,7 +105,7 @@ Changelog
 Licensing and Author
 ~~~~~~~~~~~~~~~~~~~~
 
-This project licensed with `BSD <http://en.wikipedia.org/wiki/BSD_licenses>`_.
+This project is licensed with `BSD <http://en.wikipedia.org/wiki/BSD_licenses>`_.
 See `LICENSE <https://github.com/sublee/energy/blob/master/LICENSE>`_ for the
 details.
 
