@@ -30,18 +30,34 @@ Links
   <http://github.com/sublee/energy/zipball/master#egg=energy-dev>`_
 
 """
+from __future__ import with_statement
+import re
 from setuptools import setup
+from setuptools.command.test import test
+import sys
 
-import energy
+
+# detect the current version
+with open('energy.py') as f:
+    version = re.search(r'__version__\s*=\s*\'(.+?)\'', f.read()).group(1)
+assert version
+
+
+# use pytest instead
+def run_tests(self):
+    pyc = re.compile(r'\.pyc|\$py\.class')
+    test_file = pyc.sub('.py', __import__(self.test_suite).__file__)
+    raise SystemExit(__import__('pytest').main([test_file]))
+test.run_tests = run_tests
 
 
 setup(
-    name=energy.__name__,
-    version=energy.__version__,
-    license=energy.__license__,
-    author=energy.__author__,
-    author_email=energy.__author_email__,
-    url=energy.__url__,
+    name='energy',
+    version=version,
+    license='BSD',
+    author='Heungsub Lee',
+    author_email='h'r'@'r's'r'u'r'b'r'l'r'.'r'e'r'e',
+    url='http://packages.python.org/energy',
     description='Energy system for social games',
     long_description=__doc__,
     platforms='any',
@@ -55,9 +71,10 @@ setup(
                  'Programming Language :: Python :: 2.6',
                  'Programming Language :: Python :: 2.7',
                  'Programming Language :: Python :: Implementation :: CPython',
+                 'Programming Language :: Python :: Implementation :: Jython',
                  'Programming Language :: Python :: Implementation :: PyPy',
                  'Topic :: Games/Entertainment'],
-    test_suite='energytests.suite',
-    test_loader='attest:auto_reporter.test_loader',
-    tests_require=['Attest'],
+    install_requires=['distribute'],
+    test_suite='energytests',
+    tests_require=['pytest'],
 )

@@ -13,18 +13,13 @@ import sys
 from time import mktime
 
 
-__copyright__ = 'Copyright 2012 by Heungsub Lee'
-__version__ = '0.1.2'
-__license__ = 'BSD'
-__author__ = 'Heungsub Lee'
-__author_email__ = 'h''@''subl.ee'
-__url__ = 'http://packages.python.org/energy'
+__version__ = '0.1.3'
 __all__ = ['Energy']
 
 
 def timestamp(time=None, default_time_getter=datetime.utcnow):
     """Makes some timestamp.
-    
+
     1. If you pass a :class:`datetime` object, it makes a timestamp from the
        argument.
     2. If you pass a timestamp(`int` or `float`), it just returns that.
@@ -72,6 +67,11 @@ class Energy(object):
     :type recovery_interval: number or `timedelta`
     :param recovery_quantity: a quantity of once energy recovery. Defaults to
                               ``1``.
+    :param future_tolerance: near seconds to ignore exception when used at the
+                             future
+    :param used: set this when retrieve an energy, otherwise don't touch
+    :param used_at: set this when retrieve an energy, otherwise don't touch
+
     :raise TypeError: some argument isn't valid type
     """
 
@@ -82,7 +82,7 @@ class Energy(object):
     used_at = None
 
     def __init__(self, max, recovery_interval, recovery_quantity=1,
-                 used=0, used_at=None):
+                 future_tolerance=None, used=used, used_at=used_at):
         if not isinstance(max, int):
             raise TypeError('max should be int')
         if not isinstance(recovery_quantity, int):
@@ -99,6 +99,10 @@ class Energy(object):
         self.recovery_interval = recovery_interval
         #: The quantity of once energy recovery.
         self.recovery_quantity = recovery_quantity
+        #: The near seconds to ignore exception when used at the future.
+        #:
+        #: .. versionadded:: 0.1.3
+        self.future_tolerance = future_tolerance
         self.used = used
         self.used_at = used_at
 
@@ -183,6 +187,9 @@ class Energy(object):
             return
         seconds = timestamp(time) - self.used_at
         if seconds < 0:
+            if (self.future_tolerance is not None and
+                abs(seconds) <= self.future_tolerance):
+                return 0
             raise ValueError('Used at the future (+%.2f sec)' % -seconds)
         return seconds
 
@@ -315,15 +322,28 @@ class Energy(object):
         return self.__iadd__(-val, time)
 
     def __getstate__(self):
-        return (self.max, self.recovery_interval, self.recovery_quantity, \
-                self.used, self.used_at)
+        return {'used': self.used,
+                'used_at': self.used_at,
+                'max': self.max,
+                'recovery_interval': self.recovery_interval,
+                'recovery_quantity': self.recovery_quantity,
+                'future_tolerance': self.future_tolerance}
 
     def __setstate__(self, state):
-        self.max = state[0]
-        self.recovery_interval = state[1]
-        self.recovery_quantity = state[2]
-        self.used = state[3]
-        self.used_at = state[4]
+        if isinstance(state, tuple):
+            # saved under 0.1.2
+            self._max = state[0]
+            self.recovery_interval = state[1]
+            self.recovery_quantity = state[2]
+            self.used = state[3]
+            self.used_at = state[4]
+            return self
+        self.used = state['used']
+        self.used_at = state['used_at']
+        self._max = state['max']
+        self.recovery_interval = state['recovery_interval']
+        self.recovery_quantity = state['recovery_quantity']
+        self.future_tolerance = state['future_tolerance']
 
     def __repr__(self, time=None):
         current = self.current(time)

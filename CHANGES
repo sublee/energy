@@ -1,21 +1,32 @@
+Version 0.1.3
+-------------
+
+Released on Dec 11th 2012.
+
+- Adds ``future_tolerance`` parameter to be tolerant of using energy at the
+  future. It is possible if there are several servers.
+- Changes a form of pickled :class:`Energy` from ``tuple`` to ``dict``.
+- Supports Jython.
+
 Version 0.1.2
 -------------
 
 Released on Oct 12th 2012.
 
-- fixes an error when the energy has `used_at` before initialization.
-- fixes an error when using specific time for `Energy.use`.
-- `Energy` can be compared with number (`<`, `<=`, `>`, `>=`).
+- Fixes an error when the energy has :attr:`Energy.used_at` before
+  initialization.
+- Fixes an error when using specific time for :meth:`Energy.use`.
+- :class:`Energy` can be compared with number (`<`, `<=`, `>`, `>=`).
 
 Version 0.1.1
 -------------
 
 Released on Sep 25th 2012.
 
-- supports the argumented arithmetic assignment (`+=`, `-=`).
-- fixes a calculation error when consuming energy over the maximum.
+- Supports the argumented arithmetic assignment (`+=`, `-=`).
+- Fixes a calculation error when consuming energy over the maximum.
 
-Version 0.1.0
--------------
+Version 0.1
+-----------
 
 First public preview release.
