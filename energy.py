@@ -8,16 +8,17 @@
     :copyright: (c) 2012 by Heungsub Lee
     :license: BSD, see LICENSE for more details.
 """
+from calendar import timegm
 from datetime import datetime, timedelta
 import sys
-from time import mktime
+from time import gmtime, struct_time
 
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 __all__ = ['Energy']
 
 
-def timestamp(time=None, default_time_getter=datetime.utcnow):
+def timestamp(time=None, default_time_getter=gmtime):
     """Makes some timestamp.
 
     1. If you pass a :class:`datetime` object, it makes a timestamp from the
@@ -29,7 +30,9 @@ def timestamp(time=None, default_time_getter=datetime.utcnow):
     if time is None:
         time = default_time_getter()
     if isinstance(time, datetime):
-        return mktime(time.timetuple())
+        return timegm(time.timetuple())
+    elif isinstance(time, struct_time):
+        return timegm(time)
     return int(time)
 
 
@@ -337,7 +340,7 @@ class Energy(object):
             self.recovery_quantity = state[2]
             self.used = state[3]
             self.used_at = state[4]
-            return self
+            return
         self.used = state['used']
         self.used_at = state['used_at']
         self._max = state['max']

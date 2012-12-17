@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement
+from calendar import timegm
 from contextlib import contextmanager
-from datetime import timedelta
+from datetime import datetime, timedelta
 from functools import partial
+from time import gmtime
 
 from pytest import raises
 
@@ -22,6 +24,13 @@ def time_traveler():
     energy.timestamp = partial(energy.timestamp, default_time_getter=T)
     yield T
     energy.timestamp = original_timestamp
+
+
+def test_timestamp():
+    _1sec = timedelta(0, 1)
+    assert datetime.utcfromtimestamp(timestamp()) - datetime.utcnow() < _1sec
+    assert datetime.fromtimestamp(timestamp()) - datetime.now() < _1sec
+    assert timestamp() - timegm(gmtime()) < 1
 
 
 def test_init_energy():
