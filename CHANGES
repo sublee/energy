@@ -3,11 +3,11 @@ Version 0.1.4
 
 Released on Dec 17th 2012.
 
-- Fixes a bug about the timezone of the default ``time`` argument. The
-  documentation describes the timezone as UTC but it was a local timezone.
+Fixes a bug about the timezone of the default ``time`` argument. The
+documentation describes the timezone as UTC but it was a local timezone.
   
-  If your server is already using this project and setted with non-UTC
-  timezone, you should override :func:`timestamp` to use local timezone.
+If your server is already using this project and setted with non-UTC timezone,
+you should override :func:`timestamp` to use local timezone.
 
 Version 0.1.3
 -------------
