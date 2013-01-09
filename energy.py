@@ -5,7 +5,7 @@
 
     Energy system for social games such as FarmVille or The Sims Social.
 
-    :copyright: (c) 2012 by Heungsub Lee
+    :copyright: (c) 2012-2013 by Heungsub Lee
     :license: BSD, see LICENSE for more details.
 """
 from calendar import timegm
