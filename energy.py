@@ -14,7 +14,7 @@ import sys
 from time import gmtime, struct_time
 
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __all__ = ['Energy']
 
 
@@ -37,9 +37,9 @@ def timestamp(time=None, default_time_getter=gmtime):
 
 
 if sys.version_info < (2, 6):
+    # A fallback of property under Python 2.6. The code is from
+    # http://blog.devork.be/2008/04/xsetter-syntax-in-python-25.html
     class property(property):
-        # A fallback of property under Python 2.6. The code is from
-        # http://blog.devork.be/2008/04/xsetter-syntax-in-python-25.html
         def __init__(self, fget, *args, **kwargs):
             self.__doc__ = fget.__doc__
             super(property, self).__init__(fget, *args, **kwargs)
@@ -53,11 +53,11 @@ if sys.version_info < (2, 6):
             return ns[propname]
 
 
-if sys.version_info < (2, 7):
+if not hasattr(timedelta, 'total_seconds'):
+    # A fallback of timedelta.total_seconds under Python 2.7 and Python 3.1.
     def total_seconds(timedelta):
-        # A fallback of timedelta.total_seconds under Python 2.7.
         ms, s, d = timedelta.microseconds, timedelta.seconds, timedelta.days
-        return (ms + (s + d * 24 * 3600) * 10**6) / 10**6
+        return (ms + (s + d * 24 * 3600) * (10 ** 6)) / (10 ** 6)
 
 
 class Energy(object):
@@ -158,7 +158,7 @@ class Energy(object):
 
     def recover_in(self, time=None):
         """Calculates seconds to the next energy recovery. If the energy is
-        full, this returns ``None``.
+        full or over the maximum, this returns ``None``.
 
         :param time: the time when checking the energy. Defaults to the present
                      time in UTC.
@@ -167,6 +167,21 @@ class Energy(object):
         if passed is None or passed / self.recovery_interval >= self.used:
             return
         return self.recovery_interval - (passed % self.recovery_interval)
+
+    def recover_fully_in(self, time=None):
+        """Calculates seconds to be recovered fully. If the energy is full or
+        over the maximum, this returns ``None``.
+
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
+
+        .. versionadded:: 0.1.5
+        """
+        recover_in = self.recover_in(time)
+        if recover_in is None:
+            return
+        to_recover = self.max - self.current()
+        return recover_in + self.recovery_interval * (to_recover - 1)
 
     def recovered(self, time=None):
         """Calculates the recovered energy from the player used energy first.
@@ -256,6 +271,9 @@ class Energy(object):
     def __nonzero__(self, time=None):
         """Type-casting to `bool`."""
         return bool(self.__int__(time))
+
+    # Python 3 accepts __bool__ instead of __nonzero__
+    __bool__ = __nonzero__
 
     def __eq__(self, val, time=None):
         """:class:`Energy` == `val`.

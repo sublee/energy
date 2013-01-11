@@ -1,3 +1,12 @@
+Version 0.1.5
+-------------
+
+Released on Jan 11th 2013.
+
+- Adds :meth:`Energy.recover_fully_in` to calculate seconds to be recovered
+  fully. It is useful for making push notification.
+- Supports Python 3 and Jython.
+
 Version 0.1.4
 -------------
 

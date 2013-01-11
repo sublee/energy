@@ -86,14 +86,40 @@ def test_cast_energy():
 def test_recover_energy():
     energy = Energy(10, 5)
     with time_traveler() as T:
-        T( 0); energy.use(1)
-        T( 1); assert energy == 9;  assert energy.recover_in() == 4
-        T( 2); assert energy == 9;  assert energy.recover_in() == 3
-        T( 3); assert energy == 9;  assert energy.recover_in() == 2
-        T( 4); assert energy == 9;  assert energy.recover_in() == 1
-        T( 5); assert energy == 10; assert energy.recover_in() == None
-        T( 6); assert energy == 10; assert energy.recover_in() == None
-        T(99); assert energy == 10; assert energy.recover_in() == None
+        T(0)
+        energy.use(2)
+        T(1)
+        assert energy == 8
+        assert energy.recover_in() == 4
+        assert energy.recover_fully_in() == 9
+        T(2)
+        assert energy == 8
+        assert energy.recover_in() == 3
+        assert energy.recover_fully_in() == 8
+        T(3)
+        assert energy == 8
+        assert energy.recover_in() == 2
+        assert energy.recover_fully_in() == 7
+        T(4)
+        assert energy == 8
+        assert energy.recover_in() == 1
+        assert energy.recover_fully_in() == 6
+        T(5)
+        assert energy == 9
+        assert energy.recover_in() == 5
+        assert energy.recover_fully_in() == 5
+        T(9)
+        assert energy == 9
+        assert energy.recover_in() == 1
+        assert energy.recover_fully_in() == 1
+        T(10)
+        assert energy == 10
+        assert energy.recover_in() == None
+        assert energy.recover_fully_in() == None
+        T(100)
+        assert energy == 10
+        assert energy.recover_in() == None
+        assert energy.recover_fully_in() == None
 
 
 def test_use_energy_while_recovering():
@@ -201,7 +227,8 @@ def test_pickle_energy_compatibility():
         T( 1); energy.use(5)
         T( 2); assert energy == 5
         dump = pickle.dumps(energy)
-        dump = dump.replace('energytests\nOldEnergy', 'energy\nEnergy')
+        dump = dump.replace('energytests\nOldEnergy'.encode(),
+                            'energy\nEnergy'.encode())
         loaded_energy = pickle.loads(dump)
         assert type(loaded_energy) is Energy
         T( 3); assert energy == 5
@@ -285,17 +312,31 @@ def test_set_max_energy():
 def test_extra_energy():
     energy = Energy(10, 300)
     with time_traveler() as T:
-        T( 0); energy.set(15)
-        T( 1); assert energy == 15
-        T( 2); energy.use()
-        T( 3); assert energy.recover_in() is None
-        T( 4); energy.use()
-        T( 5); assert energy.recover_in() is None
-        T( 6); energy.use(5)
-        T( 7); assert energy.recover_in() == 299
-        T( 8); assert energy.recover_in() == 298
-        T( 9); energy.set(15)
-        T(10); assert energy.recover_in() is None
+        T(0)
+        energy.set(15)
+        T(1)
+        assert energy == 15
+        assert energy.recover_in() is None
+        assert energy.recover_fully_in() is None
+        T(2)
+        energy.use()
+        assert energy.recover_in() is None
+        assert energy.recover_fully_in() is None
+        T(6)
+        energy.use(6)
+        T(7)
+        assert energy.recover_in() == 299
+        assert energy.recover_fully_in() == 599
+        T(8)
+        assert energy.recover_in() == 298
+        assert energy.recover_fully_in() == 598
+        T(9)
+        energy.set(15)
+        assert energy.recover_in() is None
+        assert energy.recover_fully_in() is None
+        T(10)
+        assert energy.recover_in() is None
+        assert energy.recover_fully_in() is None
 
 
 def test_repr_energy():
