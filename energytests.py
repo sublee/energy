@@ -377,3 +377,17 @@ def test_arithmetic_assign_energy():
         T( 9); assert energy.recover_in() == 2
         T(10); assert energy.recover_in() == 1
         T(11); assert energy == 9
+
+
+def test_various_used_at():
+    with time_traveler() as T:
+        T(2)
+        energy = Energy(10, 3, used=1, used_at=1)
+        assert energy == 9
+        T(5)
+        assert energy == 10
+        T(2)
+        energy = Energy(10, 3, used=1, used_at=datetime.utcfromtimestamp(1))
+        assert energy == 9
+        T(5)
+        assert energy == 10

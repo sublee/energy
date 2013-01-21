@@ -1,3 +1,11 @@
+Version 0.1.6
+-------------
+
+Released on Jan 21st 2013.
+
+``used_at`` parameter is allowed to be a ``datetime`` object or timestamp
+number.
+
 Version 0.1.5
 -------------
 

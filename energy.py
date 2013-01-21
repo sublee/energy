@@ -14,7 +14,7 @@ import sys
 from time import gmtime, struct_time
 
 
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 __all__ = ['Energy']
 
 
@@ -67,13 +67,14 @@ class Energy(object):
 
     :param max: maximum energy
     :param recovery_interval: an interval in seconds to recover energy
-    :type recovery_interval: number or `timedelta`
+    :type recovery_interval: number or ``timedelta``
     :param recovery_quantity: a quantity of once energy recovery. Defaults to
                               ``1``.
     :param future_tolerance: near seconds to ignore exception when used at the
                              future
     :param used: set this when retrieve an energy, otherwise don't touch
     :param used_at: set this when retrieve an energy, otherwise don't touch
+    :type used_at: timestamp number or ``datetime``
 
     :raise TypeError: some argument isn't valid type
     """
@@ -107,7 +108,8 @@ class Energy(object):
         #: .. versionadded:: 0.1.3
         self.future_tolerance = future_tolerance
         self.used = used
-        self.used_at = used_at
+        if used_at is not None:
+            self.used_at = timestamp(used_at)
 
     @property
     def max(self):
@@ -120,8 +122,8 @@ class Energy(object):
         self.config(max=max)
 
     def current(self, time=None):
-        """Calculates the current energy. This equivalents to casting to `int`
-        but can work with specified time.
+        """Calculates the current energy. This equivalents to casting to
+        ``int`` but can work with specified time.
 
         >>> energy = Energy(10, 300)
         >>> energy.use()
@@ -261,22 +263,22 @@ class Energy(object):
             self.recovery_interval = recovery_interval
 
     def __int__(self, time=None):
-        """Type-casting to `int`."""
+        """Type-casting to ``int``."""
         return self.current(time)
 
     def __float__(self, time=None):
-        """Type-casting to `float`."""
+        """Type-casting to ``float``."""
         return float(self.__int__(time))
 
     def __nonzero__(self, time=None):
-        """Type-casting to `bool`."""
+        """Type-casting to ``bool``."""
         return bool(self.__int__(time))
 
     # Python 3 accepts __bool__ instead of __nonzero__
     __bool__ = __nonzero__
 
     def __eq__(self, val, time=None):
-        """:class:`Energy` == `val`.
+        """Is current energy equivalent to the value.
 
         :param val: the operand
         :type val: :class:`Energy` or number
@@ -288,7 +290,7 @@ class Energy(object):
         return False
 
     def __lt__(self, val, time=None):
-        """:class:`Energy` < `val`.
+        """Is current energy less than the value.
 
         :param val: the operand
         :type val: number
@@ -298,7 +300,7 @@ class Energy(object):
         return self.current(time) < val
 
     def __le__(self, val, time=None):
-        """:class:`Energy` <= `val`.
+        """Is current energy less than or equivalent to the value.
 
         :param val: the operand
         :type val: number
@@ -308,7 +310,7 @@ class Energy(object):
         return self.current(time) <= val
 
     def __gt__(self, val, time=None):
-        """:class:`Energy` > `val`.
+        """Is current energy greater than the value.
 
         :param number val: the operand
         :type val: number
@@ -318,7 +320,7 @@ class Energy(object):
         return self.current(time) > val
 
     def __ge__(self, val, time=None):
-        """:class:`Energy` >= `val`.
+        """Is current energy greater than or equivalent to the value.
 
         :param val: the operand
         :type val: number
