@@ -34,7 +34,6 @@ from __future__ import with_statement
 import re
 from setuptools import setup
 from setuptools.command.test import test
-import sys
 
 
 # detect the current version
@@ -56,8 +55,8 @@ setup(
     version=version,
     license='BSD',
     author='Heungsub Lee',
-    author_email='h'r'@'r's'r'u'r'b'r'l'r'.'r'e'r'e',
-    url='http://packages.python.org/energy',
+    author_email=re.sub('((sub).)(.*)', r'\2@\1.\3', 'sublee'),
+    url='http://pythonhosted.org/energy',
     description='Energy system for social games',
     long_description=__doc__,
     platforms='any',
@@ -67,9 +66,14 @@ setup(
                  'License :: OSI Approved :: BSD License',
                  'Operating System :: OS Independent',
                  'Programming Language :: Python',
+                 'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 2.5',
                  'Programming Language :: Python :: 2.6',
                  'Programming Language :: Python :: 2.7',
+                 'Programming Language :: Python :: 3',
+                 'Programming Language :: Python :: 3.1',
+                 'Programming Language :: Python :: 3.2',
+                 'Programming Language :: Python :: 3.3',
                  'Programming Language :: Python :: Implementation :: CPython',
                  'Programming Language :: Python :: Implementation :: Jython',
                  'Programming Language :: Python :: Implementation :: PyPy',
