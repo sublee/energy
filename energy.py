@@ -277,72 +277,72 @@ class Energy(object):
     # Python 3 accepts __bool__ instead of __nonzero__
     __bool__ = __nonzero__
 
-    def __eq__(self, val, time=None):
-        """Is current energy equivalent to the value.
+    def __eq__(self, other, time=None):
+        """Is current energy equivalent to the operand.
 
-        :param val: the operand
-        :type val: :class:`Energy` or number
+        :param other: the operand
+        :type other: :class:`Energy` or number
         """
-        if isinstance(val, type(self)):
-            return self.__getstate__() == val.__getstate__()
-        elif isinstance(val, (int, float)):
-            return float(self.current(time)) == val
+        if isinstance(other, type(self)):
+            return self.__getstate__() == other.__getstate__()
+        elif isinstance(other, (int, float)):
+            return float(self.current(time)) == other
         return False
 
-    def __lt__(self, val, time=None):
-        """Is current energy less than the value.
+    def __lt__(self, other, time=None):
+        """Is current energy less than the operand.
 
-        :param val: the operand
-        :type val: number
-
-        .. versionadded:: 0.1.3
-        """
-        return self.current(time) < val
-
-    def __le__(self, val, time=None):
-        """Is current energy less than or equivalent to the value.
-
-        :param val: the operand
-        :type val: number
+        :param other: the operand
+        :type other: number
 
         .. versionadded:: 0.1.3
         """
-        return self.current(time) <= val
+        return self.current(time) < other
 
-    def __gt__(self, val, time=None):
-        """Is current energy greater than the value.
+    def __le__(self, other, time=None):
+        """Is current energy less than or equivalent to the operand.
 
-        :param number val: the operand
-        :type val: number
-
-        .. versionadded:: 0.1.3
-        """
-        return self.current(time) > val
-
-    def __ge__(self, val, time=None):
-        """Is current energy greater than or equivalent to the value.
-
-        :param val: the operand
-        :type val: number
+        :param other: the operand
+        :type other: number
 
         .. versionadded:: 0.1.3
         """
-        return self.current(time) >= val
+        return self.current(time) <= other
 
-    def __iadd__(self, val, time=None):
-        """Increases by the value.
+    def __gt__(self, other, time=None):
+        """Is current energy greater than the operand.
+
+        :param number other: the operand
+        :type other: number
+
+        .. versionadded:: 0.1.3
+        """
+        return self.current(time) > other
+
+    def __ge__(self, other, time=None):
+        """Is current energy greater than or equivalent to the operand.
+
+        :param other: the operand
+        :type other: number
+
+        .. versionadded:: 0.1.3
+        """
+        return self.current(time) >= other
+
+    def __iadd__(self, other, time=None):
+        """Increases by the operand.
 
         .. versionadded:: 0.1.1
         """
-        self.set(self.current(time) + val, time)
+        self.set(self.current(time) + other, time)
         return self
 
-    def __isub__(self, val, time=None):
-        """Decreases by the value.
+    def __isub__(self, other, time=None):
+        """Decreases by the operand.
 
         .. versionadded:: 0.1.1
         """
-        return self.__iadd__(-val, time)
+        return self.__iadd__(-other, time)
 
     def __getstate__(self):
         return {'used': self.used,
