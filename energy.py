@@ -194,7 +194,9 @@ class Energy(object):
         passed = self.passed(time)
         if passed is None:
             return 0
-        return min(int(passed / self.recovery_interval), self.used)
+        recover = self.recovery_quantity
+        recover = int(passed / self.recovery_interval) * recover
+        return min(recover, self.used)
 
     def passed(self, time=None):
         """Calculates the seconds passed from using the energy first.
