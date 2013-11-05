@@ -391,3 +391,22 @@ def test_various_used_at():
         assert energy == 9
         T(5)
         assert energy == 10
+
+
+def test_recovery_quantity():
+    with time_traveler() as T:
+        T(0)
+        energy = Energy(10, 3, 2)
+        assert energy == 10
+        energy.use()
+        energy.use()
+        energy.use()
+        assert energy == 7
+        T(1)
+        assert energy == 7
+        T(2)
+        assert energy == 7
+        T(3)
+        assert energy == 9
+        T(6)
+        assert energy == 10

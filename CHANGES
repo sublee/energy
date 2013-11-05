@@ -1,3 +1,12 @@
+Version 0.1.7
+-------------
+
+Released on Nov 5th 2013.
+
+``recovery_quantity`` works. Thanks to `Donggeun Lee <https://github.com/
+incl>`_. (commit `c98f348 <https://github.com/sublee/energy/commit/c98f348
+bed85522e491a6427e45e6ed527396eea>`_)
+
 Version 0.1.6
 -------------
 
@@ -22,7 +31,7 @@ Released on Dec 17th 2012.
 
 Fixes a bug about the timezone of the default ``time`` argument. The
 documentation describes the timezone as UTC but it was a local timezone.
-  
+
 If your server is already using this project and setted with non-UTC timezone,
 you should override :func:`timestamp` to use local timezone.
 

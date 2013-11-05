@@ -14,7 +14,7 @@ import sys
 from time import gmtime, struct_time
 
 
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 __all__ = ['Energy']
 
 
@@ -194,9 +194,9 @@ class Energy(object):
         passed = self.passed(time)
         if passed is None:
             return 0
-        recover = self.recovery_quantity
-        recover = int(passed / self.recovery_interval) * recover
-        return min(recover, self.used)
+        recovered = int(passed / self.recovery_interval) * \
+                    self.recovery_quantity
+        return min(recovered, self.used)
 
     def passed(self, time=None):
         """Calculates the seconds passed from using the energy first.
