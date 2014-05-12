@@ -52,8 +52,16 @@ def test_use_energy():
     with raises(ValueError):
         energy.use(5)
     energy.use(10, timestamp() + 10000)
+    assert energy.current(timestamp() + 10000) == 0
     with raises(ValueError):
         energy.use(10, timestamp() + 10010)
+    energy.use(10, timestamp() + 10010, force=True)
+    assert energy.recover_in(timestamp() + 10010) == 11000
+    assert energy.current(timestamp() + 10010) == 0
+    assert energy.debt(timestamp() + 10010) == 10
+    energy.use(10, timestamp() + 10010, force=True)
+    assert energy.recover_in(timestamp() + 10010) == 21000
+    assert energy.debt(timestamp() + 10010) == 20
 
 
 def test_set_energy():
