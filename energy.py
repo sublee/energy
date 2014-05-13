@@ -121,9 +121,25 @@ class Energy(object):
         """Configurates the maximum energy."""
         self.config(max=max)
 
+    def _current(self, time=None):
+        """Calculates the current internal energy.
+
+        >>> energy = Energy(10, 300)
+        >>> energy.use()
+        >>> energy._current()
+        9
+
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
+        """
+        if not self.used:
+            return self.max
+        current = self.max - self.used + self.recovered(time)
+        return current
+
     def current(self, time=None):
-        """Calculates the current energy. This equivalents to casting to
-        ``int`` but can work with specified time.
+        """Calculates the current presentative energy. This equivalents to
+        casting to ``int`` but can work with specified time.
 
         >>> energy = Energy(10, 300)
         >>> energy.use()
@@ -135,24 +151,41 @@ class Energy(object):
         :param time: the time when checking the energy. Defaults to the present
                      time in UTC.
         """
-        if not self.used:
-            return self.max
-        current = self.max - self.used + self.recovered(time)
-        return max(0, current)
+        return max(0, self._current(time))
 
-    def use(self, quantity=1, time=None):
+    def debt(self, time=None):
+        """Calculates the current energy debt.
+
+        >>> energy = Energy(10, 300)
+        >>> energy.debt()
+        >>> energy.use(11, force=True)
+        >>> energy.debt()
+        1
+        >>> energy.use(2, force=True)
+        3
+
+        :param time: the time when checking the energy. Defaults to the present
+                     time in UTC.
+        """
+        current = self._current(time)
+        if current >= 0:
+            return
+        return -current
+
+    def use(self, quantity=1, time=None, force=False):
         """Consumes the energy.
 
         :param quantity: quantity of energy to be used. Defaults to ``1``.
         :param time: the time when using the energy. Defaults to the present
                      time in UTC.
+        :param force: force to use energy even if there is not enough energy.
         :raise ValueError: not enough energy
         """
         time = timestamp(time)
-        current = self.current(time)
-        if current < quantity:
+        current = self._current(time)
+        if current < quantity and not force:
             raise ValueError('Not enough energy')
-        if current - quantity < self.max <= current:
+        if current - quantity < self.max <= current or force:
             self.used = quantity - current + self.max
             self.used_at = time
         else:
@@ -168,7 +201,11 @@ class Energy(object):
         passed = self.passed(time)
         if passed is None or passed / self.recovery_interval >= self.used:
             return
-        return self.recovery_interval - (passed % self.recovery_interval)
+        diff = self.recovery_interval - (passed % self.recovery_interval)
+        current = self._current(time)
+        if current < 0:
+            return diff - current * self.recovery_interval
+        return diff
 
     def recover_fully_in(self, time=None):
         """Calculates seconds to be recovered fully. If the energy is full or
