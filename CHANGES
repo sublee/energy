@@ -1,3 +1,14 @@
+Version 0.1.8
+-------------
+
+Released on May 13th 2014.
+
+- Adds ``force`` option for :meth:`Energy.use` to use energy even if there is
+  not enough energy.
+- Adds :meth:`Energy.debt`.
+
+(by `@youknowone <https://github.com/youknowone>`_)
+
 Version 0.1.7
 -------------
 

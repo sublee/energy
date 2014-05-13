@@ -14,7 +14,7 @@ import sys
 from time import gmtime, struct_time
 
 
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 __all__ = ['Energy']
 
 
@@ -231,8 +231,8 @@ class Energy(object):
         passed = self.passed(time)
         if passed is None:
             return 0
-        recovered = int(passed / self.recovery_interval) * \
-                    self.recovery_quantity
+        recovered = (int(passed / self.recovery_interval) *
+                     self.recovery_quantity)
         return min(recovered, self.used)
 
     def passed(self, time=None):
@@ -246,8 +246,8 @@ class Energy(object):
             return
         seconds = timestamp(time) - self.used_at
         if seconds < 0:
-            if (self.future_tolerance is not None and
-                abs(seconds) <= self.future_tolerance):
+            if self.future_tolerance is not None and \
+               abs(seconds) <= self.future_tolerance:
                 return 0
             raise ValueError('Used at the future (+%.2f sec)' % -seconds)
         return seconds
