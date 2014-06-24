@@ -14,7 +14,7 @@ import sys
 from time import gmtime, struct_time
 
 
-__version__ = '0.1.8'
+__version__ = '0.1.9'
 __all__ = ['Energy']
 
 
@@ -108,7 +108,7 @@ class Energy(object):
         #: .. versionadded:: 0.1.3
         self.future_tolerance = future_tolerance
         self.used = used
-        if used_at is not None:
+        if 0 < used and used_at is not None:
             self.used_at = timestamp(used_at)
 
     @property

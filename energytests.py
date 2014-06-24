@@ -347,6 +347,17 @@ def test_extra_energy():
         assert energy.recover_fully_in() is None
 
 
+def test_restored_extra_energy():
+    energy = Energy(10, 300, used=-5, used_at=0)
+    assert energy.used_at is None
+    with time_traveler() as T:
+        T(0)
+        assert energy == 15
+        energy.use()
+        assert energy == 14
+    assert energy.used_at is None
+
+
 def test_repr_energy():
     energy = Energy(10, 300)
     with time_traveler() as T:
