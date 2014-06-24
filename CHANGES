@@ -1,3 +1,11 @@
+Version 0.1.9
+-------------
+
+Released on June 24th 2014.
+
+Fixes a bug on restored extra energy. This issue was reported by
+`@hest <https://github.com/hest>`_.
+
 Version 0.1.8
 -------------
 
